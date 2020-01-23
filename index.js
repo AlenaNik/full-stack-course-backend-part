@@ -1,5 +1,8 @@
 const express = require('express')
 const app = express()
+const bodyParser = require('body-parser')
+
+app.use(bodyParser.json())
 
 let notes = [
     {
@@ -27,8 +30,21 @@ app.get('/notes', (req, res) => {
 })
 
 app.get('/notes/:id', (req, res) => {
-    const id = req.params.id
+    const id = Number(req.params.id)
     const note = notes.find(note => note.id === id)
+    note ? res.json(note) : res.status(404).end()
+})
+
+app.delete('/notes/:id', (req, res) => {
+    const id = Number(req.params.id)
+    notes = notes.filter(note => note.id !== id)
+    res.status(204).end()
+})
+
+app.post('/notes', (req, res) => {
+    const note = req.body
+    notes.push(note)
+    console.log(note)
     res.json(note)
 })
 
