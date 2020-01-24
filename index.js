@@ -41,10 +41,30 @@ app.delete('/notes/:id', (req, res) => {
     res.status(204).end()
 })
 
+
+const generatedId = () => {
+    const maxId = notes.length > 0
+        ? Math.max(...notes.map(n => n.id))
+        : 0
+    return maxId + 1
+}
+
+
 app.post('/notes', (req, res) => {
-    const note = req.body
-    notes.push(note)
-    console.log(note)
+    const body = req.body
+    if (!body.content) {
+        return res.status(400).json({
+            error: 'no content in the body'
+        })
+    }
+
+    const note = {
+        content: body.content,
+        important: body.important || false,
+        date: new Date(),
+        id: generatedId(),
+    }
+    notes = notes.concat(note)
     res.json(note)
 })
 
